@@ -6,11 +6,11 @@ alias q=exit
 function ushort(){
         a=$(echo "$1" | tr '[:upper:]' '[:lower:]')
         if [[ $a != http* ]];then
-                u='https://'$1
+                u="'https://$1'"
         else
-                u=$1
+                u="'$1'"
         fi
-        curl -k -v -I "$u" 2>&1 | grep -i "< location" | cut -d " " -f 3;
+        curl -k -v -I "'$u'" 2>&1 | grep -i "< location" | cut -d " " -f 3;
 }
 
 #empty files
