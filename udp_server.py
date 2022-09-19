@@ -3,7 +3,7 @@ import user_interaction
 
 #port is high for low priviledge user
 localPort   = 20001
-
+#this address is for all IPv4 addresses, if you only want local change it to 127.0.0.1
 localIP     = "0.0.0.0"
 bufferSize  = 1024
 
