@@ -68,10 +68,20 @@ def wait_for_choice(options, prompt="waiting for user's choice", secret=False, p
         wait_for_msg = wait_for_msg.replace("', '",'/')
         msg = msg + f" ({wait_for_msg})"
 
+    #camel case option Yes/No/Cancel/nOne - will work with Y/N/C/O
+    short_options = {}
+    for option in options:
+        if option.isupper() == False:
+            for char in option:
+                if char.isupper() and char not in options and char not in short_options:
+                    short_options[char] = option
+
     offset = None
     while True:
         response, offset = question(msg, user_reminder, offset)
-        if response in options:
+        if response in options or response in short_options:
+            if response not in options:
+                response = short_options[response]
             send_notification(f"{prefix_msgs} Thanks.")
             return response
         else:
@@ -81,7 +91,7 @@ def wait_for_choice(options, prompt="waiting for user's choice", secret=False, p
             send_notification(message)
 
 
-#wait for a single response
+#wait for a single response, like a pause
 def wait_for_user(wait_for_msg = 'K',prompt='Waiting for user to proceed', prefix_msgs='Bot:', user_reminder = 180):
     wait_for_choice([wait_for_msg], prompt=prompt, secret=False, prefix_msgs=prefix_msgs, user_reminder=user_reminder)
 
