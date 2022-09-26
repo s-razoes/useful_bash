@@ -6,7 +6,7 @@ localIP     = "0.0.0.0"
 localPort   = 20001
 bufferSize  = 1024
 
-bot_to_notify = "uvps_bot"
+bot_to_notify = "BOT NAME"
 
 # Create a datagram socket
 UDPServerSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
