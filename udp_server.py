@@ -1,30 +1,35 @@
 import socket
-import user_interaction
+from telenotify import user_interaction
+import html
 
-#port is high for low priviledge user
-localPort   = 20001
-#this address is for all IPv4 addresses, if you only want local change it to 127.0.0.1
 localIP     = "0.0.0.0"
+localPort   = 20001
 bufferSize  = 1024
 
-bytesToSend         = str.encode(msgFromServer)
- 
+bot_to_notify = "uvps_bot"
+
 # Create a datagram socket
 UDPServerSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
 
 # Bind to address and ip
 UDPServerSocket.bind((localIP, localPort))
 
-print("UDP server up and listening")
+print(f"UDP server up and listening on port {localPort}")
 
 # Listen for incoming datagrams
 while(True):
     bytesAddressPair = UDPServerSocket.recvfrom(bufferSize)
-    message = bytesAddressPair[0].decode('utf-8')
-    address = str(bytesAddressPair[1])
+    message = bytesAddressPair[0].decode('utf-8').strip()
+    address = str(bytesAddressPair[1]).strip()
+    if message == '':
+        message = f"Empty message from: {address}"
+        continue
+    message = html.escape(message)
     if "'127.0.0.1'" in address:
         #send message to bot
-        user_interaction.send_notification(message)
+        message = f'<code>{message}</code>'
     else:
-        user_interaction.send_notification(f'UDP: {message}')
+        message = f'{address}: <code>{message}</code>'
+    user_interaction.send_notification(message,bot_name=bot_to_notify,parse_mode='HTML')
     print(f"{address} : {message}")
+
