@@ -1,9 +1,8 @@
 alias l='ls -latr'
 alias p='ps x|grep [p]ython3'
 
-#remember to correct the path of this if it's ever changed
-alias alert='python3 udp_send.py 127.0.0.1 20001'
-alias question='python3 question_user.py '
+alias alert='telenotify '
+alias question='python3 -m telenotify.question_user '
 alias q=exit
 
 #unshort links
