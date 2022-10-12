@@ -1,12 +1,14 @@
+from datetime import datetime
 import socket
 from telenotify import user_interaction
 import html
 
-localIP     = "0.0.0.0"
 localPort   = 20001
+
+localIP     = "0.0.0.0"
 bufferSize  = 1024
 
-bot_to_notify = "BOT NAME"
+bot_to_notify = "BOT_NAME"
 
 # Create a datagram socket
 UDPServerSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
@@ -30,6 +32,8 @@ while(True):
         message = f'<code>{message}</code>'
     else:
         message = f'{address}: <code>{message}</code>'
+    now = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+    print(f"{now}:{message}")
     user_interaction.send_notification(message,bot_name=bot_to_notify,parse_mode='HTML')
     print(f"{address} : {message}")
 
