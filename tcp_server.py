@@ -4,9 +4,10 @@ import html
 from datetime import datetime
 
 port = 5003
+token = '#TOKEN#'
+bot_to_notify = "#BOT_NAME#"
 
-bot_to_notify = "BOT_NAME"
-
+TIME_THRESHOLD = 10
 host = "0.0.0.0"
 
 server_socket = socket.socket()  # get instance
@@ -20,24 +21,28 @@ while True:
     while True:
         # receive data stream. it won't accept data packet greater than 1024 bytes
         conn.settimeout(1)
+        ip_address = address[0]
         try:
-            data = conn.recv(1024).decode("utf-8").strip()
-            message = html.escape(data)
-            if "127.0.0.1" in address:
-                #send message to bot
-                message = f'<code>{message}</code>'
-            else:
-                message = f'{address}: <code>{message}</code>'
+            message = conn.recv(1024).decode("utf-8").strip()
             now = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-            print(f"{now}:{message}")
-            user_interaction.send_notification(message,bot_name=bot_to_notify,parse_mode='HTML')
+            sent = ' Failed'
+            if message.startswith(token):
+                sent = ''
+                message = message[len(token):].strip()
+                message = html.escape(message)
+                if "127.0.0.1" == ip_address:
+                    #send message to bot
+                    message = f'<code>{message}</code>'
+                else:
+                    message = f'{ip_address} - TCP: <code>{message}</code>'
+                user_interaction.send_notification(message,bot_name=bot_to_notify,parse_mode='HTML')
+            print(f"{now}{sent}:{message}")
         except Exception as e:
             now = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
             print(f"error:{now} - {e}")
             conn.close()
-            break
+            #break
         
-        print("from connected user: " + str(data))
         break
 
     conn.close()  # close the connection
