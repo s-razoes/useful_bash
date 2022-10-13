@@ -16,7 +16,14 @@ function ushort(){
         curl -k -v -I "'$u'" 2>&1 | grep -i "< location" | cut -d " " -f 3;
 }
 
-#empty files
+#alternative alert via tcp server
+function alert(){
+	token="#TCP TOKEN HERE#"
+	echo $token"$1"|nc #IP SERVER HERE# #PORT SERVER HERE#
+}
+
+
+#hollow out files without removing permissions
 function hollow(){
         cat /dev/null > "$1";
 }
