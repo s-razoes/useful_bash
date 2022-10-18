@@ -22,6 +22,7 @@ UDPServerSocket.bind((localIP, localPort))
 print(f"UDP server up and listening on port {localPort}")
 allowed_IPs = []
 last_msg_ip = None
+last_msg = None
 last_msg_time = time.time()
 # Listen for incoming datagrams
 while(True):
@@ -43,20 +44,28 @@ while(True):
         if message == '':
             print(f"{now} {address}: Token only")
             continue #it was just the token
+
+        #duplication prevention
+        if last_msg == message and (time.time() - last_msg_time)<TIME_THRESHOLD and last_msg_ip == ip_address:#duplicate message
+            continue
+        else:
+            last_msg = message
+
+        #prepare and send message
         message = html.escape(message)
         if "127.0.0.1" == ip_address:
             #send message to bot
-            message = f'<code>{message}</code>'
+            notification = f'<code>{message}</code>'
         else:
             notification = f'{ip_address} - UDP: <code>{message}</code>'
-            if last_msg_ip != ip_address:
-                last_msg_ip = ip_address                
-            else:
-                if (time.time() - last_msg_time)<TIME_THRESHOLD:
-                    notification = f'<code>{message}</code>'
+            if last_msg_ip == ip_address and (time.time() - last_msg_time)<TIME_THRESHOLD:
+                #for the situations that will have more information, the header is useless
+                notification = f'<code>{message}</code>'
+        last_msg_ip = ip_address
         last_msg_time = time.time()
         user_interaction.send_notification(notification,bot_name=bot_to_notify,parse_mode='HTML')
         print(f"{now} {address}:{message}")
     else:
         print(f"{now}-FAILED-{address}:{message}")
         continue
+
