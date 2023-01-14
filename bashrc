@@ -4,6 +4,7 @@ alias p='ps x|grep [p]ython3'
 alias alert='telenotify '
 alias question='python3 -m telenotify.question_user '
 alias q=exit
+alias v='vim -u NONE'
 
 #unshort links
 function ushort(){
