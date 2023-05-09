@@ -5,6 +5,9 @@ alias alert='telenotify '
 alias question='python3 -m telenotify.question_user '
 alias q=exit
 
+#mount or unmount if already mounted sshfs drive
+alias mt='if [[ $(mount|grep $LOCALPATH|wc -l) -eq 0 ]]; then sshfs -p $PORT $USER@$HOST:$HOSTPATH $LOCALPATH && echo "Mounted..."; else umount $LOCALPATH && echo "UNmounted..."; fi'
+
 #fast vi
 alias v='vim -u NONE'
 
