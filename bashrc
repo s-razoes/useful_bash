@@ -14,7 +14,7 @@ alias v='vim -u NONE'
 #tmux
 sessionName="logs_session"
 #start a tmux session or if one detached already exist then open it
-alias t='if [[ $(tmux ls |grep -v "(attached)"|grep -v "$sessionName"|wc -l) -eq 0 ]]; then tmux new; else tmux attach-session -t `tmux ls|grep -v "(attached)"|grep -v "$sessionName"|head -n 1|sed "s/:.*//"`; fi'
+alias t='if [ -n "$TMUX" ]; then echo "Already in tmux"; else if [[ $(tmux ls |grep -v "(attached)"|grep -v "$sessionName"|wc -l) -eq 0 ]]; then tmux new; else tmux attach-session -t `tmux ls|grep -v "(attached)"|grep -v "$sessionName"|head -n 1|sed "s/:.*//"`; fi fi'
 
 #open tmux with 3 panes
 function tmux_logs_pane(){
