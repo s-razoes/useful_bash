@@ -11,9 +11,32 @@ alias mt='if [[ $(mount|grep $LOCALPATH|wc -l) -eq 0 ]]; then sshfs -p $PORT $US
 #fast vi
 alias v='vim -u NONE'
 
+#tmux
+sessionName="logs_session"
 #start a tmux session or if one detached already exist then open it
-alias t='if [[ $(tmux ls |grep -v "(attached)"|wc -l) -eq 0 ]]; then tmux new; else tmux attach-session -t `tmux ls|grep -v "(attached)"|head -n 1|sed "s/:.*//"`; fi'
+alias t='if [[ $(tmux ls |grep -v "(attached)"|grep -v "$sessionName"|wc -l) -eq 0 ]]; then tmux new; else tmux attach-session -t `tmux ls|grep -v "(attached)"|grep -v "$sessionName"|head -n 1|sed "s/:.*//"`; fi'
 
+#open tmux with 3 panes
+function tmux_logs_pane(){
+    # if it's in tmux switch to that session
+    if [ -n "$TMUX" ]; then
+        tmux switch -t $sessionName
+    else
+        # if session exists already, then switch to it
+        if [[ $(tmux ls|grep $sessionName|wc -l) -eq 1 ]]; then
+            tmux attach -t $sessionName
+        else
+	    # These commands can be adjusted to whatever is wanted
+            tmux new-session -d -s $sessionName
+            tmux send-keys -t $sessionName "echo pane 1, full vertical" Enter
+            tmux split-window -h -t $sessionName
+            tmux send-keys -t $sessionName "echo pane 2, half vertical" Enter
+            tmux split-window -v -p 66 -t $sessionName
+            tmux send-keys -t $sessionName "echo pane 2, half vertical" Enter
+            tmux attach -t $sessionName
+        fi
+    fi
+}
 
 #unshort links
 function ushort(){
