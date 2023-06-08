@@ -37,6 +37,7 @@ function tmux_logs_pane(){
         fi
     fi
 }
+alias tl=tmux_logs_pane
 
 #unshort links
 function ushort(){
