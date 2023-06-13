@@ -15,54 +15,59 @@ alias v='vim -u NONE'
 sessionName="logs_session"
 #start a tmux session or if one detached already exist then open it
 function t(){
-	mainSessionName="main"
-	if [ -n "$TMUX" ]; then
-		if [[ "$sessionName" != "$(tmux display-message -p '#S')" ]]; then
-			tmux display-panes
-			return
-		fi
-	fi
-	if [[ $(tmux ls |grep -v "(attached)"|grep -v "$sessionName"|wc -l) -eq 0 ]]; then
-		if [ -n "$TMUX" ]; then
-			if [[ $(tmux ls |grep "$mainSessionName"|grep -v "$sessionName"|wc -l) -eq 0 ]]; then
-				tmux new -s $mainSessionName -d
-			fi
-			tmux switch -t $mainSessionName
-		else
-			tmux new -s $mainSessionName
-		fi
-	else
-		if [ -n "$TMUX" ]; then
-			tmux switch -t `tmux ls|grep -v "(attached)"|grep -v "$sessionName"|head -n 1|sed "s/:.*//"`
-		else
-			tmux attach-session -t `tmux ls|grep -v "(attached)"|grep -v "$sessionName"|head -n 1|sed "s/:.*//"`
-		fi
-	fi
+    mainSessionName="main"
+    if [ -n "$TMUX" ]; then
+        if [[ "$sessionName" != "$(tmux display-message -p '#S')" ]]; then
+            tmux display-panes
+            return
+        fi
+    fi
+    if [[ $(tmux ls |grep -v "(attached)"|grep -v "$sessionName"|wc -l) -eq 0 ]]; then
+        if [ -n "$TMUX" ]; then
+            if [[ $(tmux ls |grep "$mainSessionName"|grep -v "$sessionName"|wc -l) -eq 0 ]]; then
+                tmux new -s $mainSessionName -d
+            fi
+            tmux switch -t $mainSessionName
+        else
+            if [[ $(tmux ls |grep "$mainSessionName"|wc -l) -eq 0 ]]; then
+                tmux new -s $mainSessionName
+            else
+                #there is one main but it's not attached
+                tmux new #switch -t $mainSessionName
+            fi
+        fi
+    else
+        if [ -n "$TMUX" ]; then
+            tmux switch -t `tmux ls|grep -v "(attached)"|grep -v "$sessionName"|head -n 1|sed "s/:.*//"`
+        else
+            tmux attach-session -t `tmux ls|grep -v "(attached)"|grep -v "$sessionName"|head -n 1|sed "s/:.*//"`
+        fi
+    fi
 }
+
 
 #open tmux with 3 panes for logs
 function tl(){
     # if it's in tmux switch to that session
+    SC='attach'
     if [ -n "$TMUX" ]; then
-	if [[ "$sessionName" == "$(tmux display-message -p '#S')" ]]; then
-		tmux display-panes
-		return
-	fi
-        tmux switch -t $sessionName
-    else
-        # if session exists already, then switch to it
-        if [[ $(tmux ls|grep $sessionName|wc -l) -eq 1 ]]; then
-            tmux attach -t $sessionName
-        else
-	    # These commands can be adjusted to whatever is wanted
-            tmux new-session -d -s $sessionName
-            tmux send-keys -t $sessionName "echo pane 1, full vertical" Enter
-            tmux split-window -h -t $sessionName
-            tmux send-keys -t $sessionName "echo pane 2, half vertical" Enter
-            tmux split-window -v -p 66 -t $sessionName
-            tmux send-keys -t $sessionName "echo pane 2, half vertical" Enter
-            tmux attach -t $sessionName
+        if [[ "$sessionName" == "$(tmux display-message -p '#S')" ]]; then
+            tmux display-panes
+            return
         fi
+        SC = 'switch'
+    fi
+    if [[ $(tmux ls|grep $sessionName|wc -l) -eq 1 ]]; then
+        tmux $SC -t $sessionName
+    else
+        # These commands can be adjusted to whatever is wanted
+        tmux new-session -d -s $sessionName
+        tmux send-keys -t $sessionName "echo pane 1, full vertical" Enter
+        tmux split-window -h -t $sessionName
+        tmux send-keys -t $sessionName "echo pane 2, half vertical" Enter
+        tmux split-window -v -p 66 -t $sessionName
+        tmux send-keys -t $sessionName "echo pane 2, half vertical" Enter
+        tmux attach -t $sessionName
     fi
 }
 
