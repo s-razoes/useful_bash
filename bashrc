@@ -55,7 +55,7 @@ function tl(){
             tmux display-panes
             return
         fi
-        SC = 'switch'
+        SC='switch'
     fi
     if [[ $(tmux ls|grep $sessionName|wc -l) -eq 1 ]]; then
         tmux $SC -t $sessionName
