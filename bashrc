@@ -67,7 +67,7 @@ function tl(){
         tmux send-keys -t $sessionName "echo pane 2, half vertical" Enter
         tmux split-window -v -p 66 -t $sessionName
         tmux send-keys -t $sessionName "echo pane 2, half vertical" Enter
-        tmux attach -t $sessionName
+        tmux $SC -t $sessionName
     fi
 }
 
